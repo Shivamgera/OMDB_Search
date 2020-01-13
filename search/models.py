@@ -1,7 +1,11 @@
 from django.db import models
+
+from datetime import datetime
 # Create your models here.
 
+
 class Movies(models.Model):
+    created = models.DateTimeField(auto_now=True)
     title = models.CharField(max_length=255)
     year = models.IntegerField()
     rating = models.FloatField()
