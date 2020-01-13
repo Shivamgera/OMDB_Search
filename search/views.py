@@ -7,7 +7,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework import filters
 
-from .models import Movie
+from .models import Movies
 # Create your views here.
 
 
