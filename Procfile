@@ -1,1 +1,1 @@
-web:gunicorn OMDB_Search.wsgi --log-file -
+web: gunicorn OMDB_Search.wsgi --log-file -
