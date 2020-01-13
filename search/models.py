@@ -1,5 +1,4 @@
 from django.db import models
-
 # Create your models here.
 
 class Movies(models.Model):
@@ -20,4 +19,4 @@ class Genres(models.Model):
 
     def __str__(self):
         return f'{self.movie_id} {self.genre}'
-        
+
