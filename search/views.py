@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import filters
 
 from .models import Movies
+from .serializers import MoviesSerializer
 # Create your views here.
 
 
@@ -24,8 +25,16 @@ Genres: MovieID, genre
 
 
 class MovieView(ListAPIView):
-    serializer_class = ''
+    serializer_class = MoviesSerializer
     pagination_class = CursorPagination
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['Title']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title']
+    ordering = ['title', 'id']
+
+    def get_queryset(self):
+        query_set = Movies.objects.all()
+        param = self.request.query_params.get('q', None)
+        if param is not None:
+            query_set = query_set.filter(title__icontains=param).values()
+        return query_set
 
