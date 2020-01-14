@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'search.apps.SearchConfig',
     'corsheaders',
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
+    'elastic',
 ]
 
 MIDDLEWARE = [
@@ -110,6 +113,12 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     'SEARCH_PARAM': 'q',
     'ORDERING_PARAM': 'o',
+}
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200',
+    },
 }
 
 # Internationalization
