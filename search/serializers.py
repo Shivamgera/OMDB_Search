@@ -7,3 +7,4 @@ class MoviesSerializer(serializers.Serializer):
     title = serializers.CharField(required=False, max_length=255)
     year = serializers.IntegerField()
     rating = serializers.FloatField()
+    genre = serializers.CharField()

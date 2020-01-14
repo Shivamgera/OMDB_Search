@@ -1,6 +1,6 @@
 import pickle
 
-from django.shortcuts import render
+from django.db.models import Q
 from rest_framework.pagination import CursorPagination
 from rest_framework.decorators import api_view
 from rest_framework.generics import ListAPIView
@@ -28,13 +28,13 @@ class MovieView(ListAPIView):
     serializer_class = MoviesSerializer
     pagination_class = CursorPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['title']
+    search_fields = ['title', 'genre']
     ordering = ['title', 'id']
 
     def get_queryset(self):
         query_set = Movies.objects.all()
         param = self.request.query_params.get('q', None)
         if param is not None:
-            query_set = query_set.filter(title__icontains=param).values()
+            query_set = query_set.filter(Q(title__icontains=param) | Q(genre__icontains=param)).values()
         return query_set
 
