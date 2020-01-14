@@ -25,7 +25,9 @@ SECRET_KEY = '$c0h0&^os48^!ad1f22^8$)jcv)+gg=$*$su!$b&=(x_z&csiy'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['movie-search-project.herokuapp.com','127.0.0.1']
+
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 # Application definition
@@ -54,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware'
 ]
 
 ROOT_URLCONF = 'OMDB_Search.urls'
@@ -134,8 +137,15 @@ USE_L10N = True
 
 USE_TZ = True
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+)
