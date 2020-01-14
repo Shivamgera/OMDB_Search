@@ -20,18 +20,19 @@ from django_elasticsearch_dsl_drf.filter_backends import (
 from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 
 
+
 class MoviesDocumentViewSet(DocumentViewSet):
     document = MoviesDocument
     serializer_class = MoviesDocumentSerializer
     lookup_field = 'id'
     filter_backends= [
-        FilteringFilterBackend,
+        # FilteringFilterBackend,
         DefaultOrderingFilterBackend,
         OrderingFilterBackend,
         SearchFilterBackend,
-        SuggesterFilterBackend
+        # SuggesterFilterBackend
     ]
-    pagination_class = CursorPagination
+    # pagination_class = CursorPagination
     search_fields=(
         'title',
         'genre'
@@ -40,10 +41,10 @@ class MoviesDocumentViewSet(DocumentViewSet):
         'genre'
     }
     ordering_fields = {
-        'title':'title.raw',
+        'title':'title',
         'id':None,
     }
-    ordering = 'title.raw'
+    # ordering = 'title.raw'
     suggester_fields = {
         'name_suggest':{
             'field':'title.suggest',
@@ -54,4 +55,5 @@ class MoviesDocumentViewSet(DocumentViewSet):
             ]
         }
     }
+
 
