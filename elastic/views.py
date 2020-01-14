@@ -24,7 +24,7 @@ class MoviesDocumentViewSet(DocumentViewSet):
     document = MoviesDocument
     serializer_class = MoviesDocumentSerializer
     lookup_field = 'id'
-    filter_backends= [
+    filter_backends = [
         FilteringFilterBackend,
         DefaultOrderingFilterBackend,
         OrderingFilterBackend,
@@ -32,7 +32,7 @@ class MoviesDocumentViewSet(DocumentViewSet):
         SuggesterFilterBackend
     ]
     pagination_class = CursorPagination
-    search_fields=(
+    search_fields = (
         'title',
         'genre'
     )
@@ -40,8 +40,8 @@ class MoviesDocumentViewSet(DocumentViewSet):
         'genre'
     }
     ordering_fields = {
-        'title':'title.raw',
-        'id':None,
+        'title': 'title.raw',
+        'id': None,
     }
     ordering = 'title.raw'
     suggester_fields = {

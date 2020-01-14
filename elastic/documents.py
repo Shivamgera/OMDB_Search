@@ -26,7 +26,7 @@ class MoviesDocument(Document):
         }
     )
 
-    class Meta(object):
+    class Django(object):
         model = Movies
 
 
