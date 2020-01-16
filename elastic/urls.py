@@ -1,14 +1,17 @@
 from django.urls import path, include
 from django.conf.urls import url
-from rest_framework.urlpatterns import format_suffix_patterns
-from elastic.views import MoviesDocumentViewSet
-from rest_framework_extensions.routers import ExtendedDefaultRouter
+# from elastic.views import MoviesDocumentViewSet
+# from rest_framework_extensions.routers import ExtendedDefaultRouter
+from .views import MoviesView
 
-router = ExtendedDefaultRouter()
-movies = router.register(r'search',
-                        MoviesDocumentViewSet,
-                        base_name='moviesdocument')
+
+#
+# router = ExtendedDefaultRouter()
+# movies = router.register(r'search',
+#                         MoviesDocumentViewSet,
+#                         basename='moviesdocument')
+
 urlpatterns = [
     # path('movie/', MovieView.as_view(), name='search'),
-    url(r'^', include(router.urls)),
+    url('', MoviesView.as_view(), name='elastic_search'),
 ]

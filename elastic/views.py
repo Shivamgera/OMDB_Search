@@ -1,57 +1,23 @@
+from elasticsearch_dsl import Q
+from rest_framework.pagination import CursorPagination
 from rest_framework.generics import ListAPIView
+from rest_framework import filters
 
-from django_elasticsearch_dsl_drf.constants import (
-    SUGGESTER_TERM,
-    SUGGESTER_PHRASE,
-    SUGGESTER_COMPLETION,
-)
-from .models import Movies
 from .documents import MoviesDocument
 from .serializers import MoviesDocumentSerializer
-from rest_framework.pagination import CursorPagination
-from django_elasticsearch_dsl_drf.filter_backends import (
-    FilteringFilterBackend,
-    DefaultOrderingFilterBackend,
-    OrderingFilterBackend,
-    SearchFilterBackend,
-    SuggesterFilterBackend,
-    FunctionalSuggesterFilterBackend,
-)
-from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 
 
-class MoviesDocumentViewSet(DocumentViewSet):
+class MoviesView(ListAPIView):
     document = MoviesDocument
     serializer_class = MoviesDocumentSerializer
-    lookup_field = 'id'
-    filter_backends= [
-        FilteringFilterBackend,
-        DefaultOrderingFilterBackend,
-        OrderingFilterBackend,
-        SearchFilterBackend,
-        SuggesterFilterBackend
-    ]
     pagination_class = CursorPagination
-    search_fields=(
-        'title',
-        'genre'
-    )
-    filter_fields = {
-        'genre'
-    }
-    ordering_fields = {
-        'title':'title.raw',
-        'id':None,
-    }
-    ordering = 'title.raw'
-    suggester_fields = {
-        'name_suggest':{
-            'field':'title.suggest',
-            'suggesters':[
-                SUGGESTER_TERM,
-                SUGGESTER_PHRASE,
-                SUGGESTER_COMPLETION,
-            ]
-        }
-    }
+    filter_backends = [filters.OrderingFilter]
+    ordering = ['title', 'id']
 
+    def get_queryset(self):
+        s = MoviesDocument.search()
+        param = self.request.query_params.get('q', None)
+        if param:
+            temp = s.filter(Q('match', title=param) | Q('match', genre=param))
+            return temp.to_queryset()
+        return s[:s.count()].to_queryset()

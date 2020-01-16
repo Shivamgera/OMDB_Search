@@ -13,11 +13,3 @@ class Movies(models.Model):
 
     def __repr__(self):
         return f'{self.title} & {self.rating}'
-
-
-class Genres(models.Model):
-    movie_id = models.ForeignKey('Movies', on_delete=models.CASCADE)
-    genre = models.CharField(max_length=60)
-
-    def __str__(self):
-        return f'{self.movie_id} {self.genre}'
