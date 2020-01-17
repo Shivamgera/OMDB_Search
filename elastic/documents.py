@@ -1,7 +1,6 @@
 from django_elasticsearch_dsl import Document, Index, fields
-from elasticsearch_dsl import analyzer
 
-from .models import Movies, Genres
+from .models import MoviesModel
 
 MOVIES_INDEX = Index('movies')
 MOVIES_INDEX.settings(
@@ -16,7 +15,6 @@ class MoviesDocument(Document):
     title = fields.TextField(
         fields={
             'raw': fields.TextField(analyzer='keyword'),
-            'suggest':fields.CompletionField(),
         }
     )
     year = fields.IntegerField()
@@ -28,11 +26,4 @@ class MoviesDocument(Document):
     )
 
     class Django(object):
-        model = Movies
-
-
-GENRES_INDEX = Index('Genres')
-GENRES_INDEX.settings(
-    number_of_shards=1,
-    number_of_replicas=0
-)
+        model = MoviesModel

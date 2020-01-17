@@ -25,7 +25,7 @@ SECRET_KEY = '$c0h0&^os48^!ad1f22^8$)jcv)+gg=$*$su!$b&=(x_z&csiy'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['movie-search-project.herokuapp.com','127.0.0.1']
+ALLOWED_HOSTS = ['movie-search-project.herokuapp.com','127.0.0.1', 'localhost']
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -120,7 +120,7 @@ REST_FRAMEWORK = {
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'localhost:9200',
+        'hosts': '127.0.0.1:9200',
     },
 }
 
