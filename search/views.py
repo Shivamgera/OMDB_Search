@@ -1,4 +1,6 @@
 import pickle
+from operator import or_
+from functools import reduce
 
 from django.db.models import Q
 from rest_framework.pagination import CursorPagination
@@ -18,23 +20,38 @@ def cat(request):
     return Response({'categories': sorted(categ)})
 
 
-"""
-Movie: Title, Year, imdbRating, 
-Genres: MovieID, genre
-"""
-
-
 class MovieView(ListAPIView):
     serializer_class = MoviesSerializer
     pagination_class = CursorPagination
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'genre']
-    ordering = ['title', 'id']
+    ordering = ['title', 'rating']
 
     def get_queryset(self):
         query_set = Movies.objects.all()
-        param = self.request.query_params.get('q', None)
-        if param is not None:
-            query_set = query_set.filter(Q(title__icontains=param) | Q(genre__icontains=param)).values()
-        return query_set
+        title_param = self.request.query_params.get('q', None)
+        genre_param = self.request.query_params.get('g', None)
 
+        title_query = _field_query(title_param, 'title')
+        genre_query = _field_query(genre_param, 'genre')
+        return query_set.filter(title_query & genre_query).values()
+
+
+        # if param is not None:
+        #     title_query_set = reduce(or_, (Q(title__icontains=i) for i in param))
+        #     genre_query_set = reduce(or_, (Q(genre__icontains=i) for i in param)),
+        #     query_set = query_set.filter(title_query_set & genre_query_set).values()
+        # return query_set
+
+def _field_query(param, field):
+    if not param:
+        return Q()
+    param = param.replace('+', ' ').split(' ')
+    query = Q()
+    if field == 'title':
+        for i in param:
+            query &= Q(title__icontains=i)
+    else:
+        for i in param:
+            query &= Q(genre__icontains=i)
+    return query

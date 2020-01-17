@@ -1,40 +1,29 @@
-from itertools import permutations
+from django_elasticsearch_dsl import Document, Index, fields
 
-from django_elasticsearch_dsl import Document
-from django_elasticsearch_dsl.registries import registry
-from elasticsearch_dsl import Completion, Keyword, Float, Text
+from .models import MoviesModel
 
-from .models import Movies
+MOVIES_INDEX = Index('movies')
+MOVIES_INDEX.settings(
+    number_of_shards=1,
+    number_of_replicas=0,
+)
 
 
-@registry.register_document
+@MOVIES_INDEX.doc_type
 class MoviesDocument(Document):
-    # title = Text(
-    #     fields={
-    #         'keyword': Keyword()
-    #     }
-    # )
-    # suggest = Completion()
-    # rating = Float()
-    #
-    # def clean(self):
-    #     self.suggest = {
-    #         'input': [' '.join(p) for p in permutations(self.title.split())],
-    #         'weight': self.rating
-    #     }
-
-    class Index:
-        name = 'movies'
-        settings = {
-            'number_of_shards': 1,
-            'number_of_replicas': 0,
+    created = fields.DateField()
+    title = fields.TextField(
+        fields={
+            'raw': fields.TextField(analyzer='keyword'),
         }
+    )
+    year = fields.IntegerField()
+    rating = fields.FloatField()
+    genre = fields.TextField(
+        fields={
+            'raw': fields.TextField(analyzer='keyword')
+        }
+    )
 
     class Django(object):
-        model = Movies
-        fields = [
-            'year',
-            'genre',
-            'title',
-            'rating'
-        ]
+        model = MoviesModel
