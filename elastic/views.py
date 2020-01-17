@@ -1,18 +1,18 @@
 from elasticsearch_dsl import Q, Search
 from rest_framework.generics import ListAPIView
-from .serializers import MoviesElasticSerializer
+from .serializers import MoviesDocumentSerializer
 from .elastic_index import MoviesIndex, ELASTIC_INDEX
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import MoviesDocumentSerializer
-from .elastic_index import MoviesAutoIndex, ELASTIC_INDEX
-from .models import Movies
+from .serializers import MoviesDocumentSerializer,MoviesSuggestionsSerializer
+from .elastic_index_s import MoviesAutoIndex
+from .models import MoviesModel
 from .documents import MoviesDocument
-from elastic.elastic_index_s import MoviesIndex
-from .serializers import MoviesDocumentSerializer
+from elastic.elastic_index_s import MoviesAutoIndex
+
 from rest_framework.pagination import CursorPagination
 from rest_framework import filters, response
-from elasticsearch_dsl import Q
+from elasticsearch_dsl import Q , connections
 from elasticsearch_dsl import Search
 
 
@@ -22,9 +22,14 @@ class MoviesAutoCompleteView(APIView):
     # filter_backends = [ filters.OrderingFilter]
     # search_fields = ['title']
     # ordering = ['title', 'id']
+    connections.create_connection('default',
+    hosts=['https://search-app-9843249466.ap-southeast-2.bonsaisearch.net/'],
+    http_auth=('h4qrprc9p','7igk580k6e'),
+    timeout=60,
+    )
     def get(self,request):
         param = self.request.query_params.get('q', None)
-        s = MoviesIndex.search()
+        s = MoviesAutoIndex.search(index='index-shivam')
         # s = s.suggest('auto_complete', param, completion={'field': 'suggest'})
         # resp = s.execute()
         # print(resp)
@@ -50,7 +55,7 @@ class MoviesAutoCompleteView(APIView):
             # json.dumps(list)
             return Response(list_resp)
         else:
-            s = MoviesIndex.search()
+            s = MoviesAutoIndex.search().filter()
             return s[:s.count()].to_queryset()
 
 
@@ -70,8 +75,13 @@ def _field_query(param, field):
 
 
 class MoviesView(ListAPIView):
-    serializer_class = MoviesElasticSerializer
+    serializer_class = MoviesDocumentSerializer
     pagination_class = None
+    connections.create_connection('default',
+    hosts=['https://search-app-9843249466.ap-southeast-2.bonsaisearch.net/'],
+    http_auth=('h4qrprc9p','7igk580k6e'),
+    timeout=60,
+    )
 
     def get_queryset(self):
         s = Search(index=ELASTIC_INDEX)
@@ -81,16 +91,20 @@ class MoviesView(ListAPIView):
         title_query = _field_query(title_param, 'title')
         genre_query = _field_query(genre_param, 'genre')
 
-        return [i.__dict__['_d_'] for i in s.filter(title_query & genre_query)]
+        return [i.__dict__['_d_'] for i in s.filter(title_query & genre_query).execute()]
 
 
 class SuggestionsView(ListAPIView):
-    serializer_class = MoviesElasticSerializer
+    serializer_class = MoviesSuggestionsSerializer
     pagination_class = None
-
+    connections.create_connection('default',
+    hosts=['https://search-app-9843249466.ap-southeast-2.bonsaisearch.net/'],
+    http_auth=('h4qrprc9p','7igk580k6e'),
+    timeout=60,
+    )
     def get_queryset(self):
         s = Search(index=ELASTIC_INDEX)
         title_param = self.request.query_params.get('q', None)
         s = s.suggest('auto_complete', title_param, completion={'field': 'suggest'})
         response = s.execute()
-        return [{'i._source.title', 'i._score'} for i in response.suggest.auto_complete[0]]
+        return [{'title':i._source.title, 'score':i._score} for i in response.suggest.auto_complete[0].options]
