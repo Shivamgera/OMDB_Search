@@ -4,7 +4,7 @@ from datetime import datetime
 from elasticsearch_dsl import connections, Document, Completion, Text, Integer, Float, Keyword, analyzer, tokenizer, \
     Date, Index
 
-ELASTIC_INDEX = 'movies-index'
+ELASTIC_INDEX = 'movies-suggestions'
 custom_analyzer = analyzer(
     'my_analyzer',
     tokenizer=tokenizer('bigram', 'nGram', min_gram=2, max_gram=2),
