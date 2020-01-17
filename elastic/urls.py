@@ -1,9 +1,11 @@
 from django.urls import path, include
 from django.conf.urls import url
-from .views import MoviesView, SuggestionsView
+from rest_framework.urlpatterns import format_suffix_patterns
+from elastic.views import MoviesView, MoviesAutoCompleteView, SuggestionsView
 
 urlpatterns = [
-    # path('movie/', MovieView.as_view(), name='search'),
-    url('', MoviesView.as_view(), name='elastic_search'),
+    url(r'^', include(router.urls)),
+    path('search/', MoviesView.as_view(), name='movies'),
+    path('auto_complete/', MoviesAutoCompleteView.as_view(), name='suggest'),
     url('suggest/', SuggestionsView.as_view(), name='suggestions'),
 ]
