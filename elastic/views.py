@@ -1,7 +1,7 @@
 from elasticsearch_dsl import Q, Search
 from rest_framework.generics import ListAPIView
 
-from .serializers import MoviesDocumentSerializer, MoviesElasticSerializer
+from .serializers import MoviesElasticSerializer
 from .elastic_index import MoviesIndex, ELASTIC_INDEX
 
 
